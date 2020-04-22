@@ -3,9 +3,8 @@ import { HiresPage, LoresPage, VideoModes } from './canvas';
 import CPU6502 from './cpu6502';
 import MMU from './mmu';
 import RAM from './ram';
-import { debug } from './util';
 
-import SYMBOLS from './symbols';
+import Debugger from './debugger';
 
 export function Apple2(options) {
     var stats = {
@@ -14,12 +13,6 @@ export function Apple2(options) {
     };
 
     var paused = false;
-
-    var DEBUG = true;
-    var TRACE = false;
-    var MAX_TRACE = 256;
-    var trace = [];
-    var breakpoints = {};
 
     var runTimer = null;
     var runAnimationFrame = null;
@@ -68,6 +61,8 @@ export function Apple2(options) {
         window.webkitCancelAnimationFrame ||
         window.msCancelAnimationFrame;
 
+    var theDebugger = new Debugger(cpu);
+
     function run() {
         if (runTimer || runAnimationFrame) {
             return; // already running
@@ -86,22 +81,8 @@ export function Apple2(options) {
                 step = stepMax;
             }
 
-            if (DEBUG) {
-                cpu.stepCyclesDebug(TRACE ? 1 : step, function() {
-                    var info = cpu.getDebugInfo();
-                    if (info[0] in breakpoints && breakpoints[info[0](info)]) {
-                        debug(cpu.printDebugInfo(info, SYMBOLS));
-                        stop();
-                    }
-                    if (TRACE) {
-                        debug(cpu.printDebugInfo(info, SYMBOLS));
-                    } else {
-                        trace.push(info);
-                        if (trace.length > MAX_TRACE) {
-                            trace.shift();
-                        }
-                    }
-                });
+            if (theDebugger) {
+                theDebugger.stepCycles(step);
             } else {
                 cpu.stepCycles(step);
             }
@@ -195,16 +176,8 @@ export function Apple2(options) {
             return vm;
         },
 
-        setDebug: function (on) {
-            DEBUG = on;
-        },
-
-        getTrace: function () {
-            return trace.map((info) => cpu.printDebugInfo(info, SYMBOLS)).join('\n');
-        },
-
-        setBreakpoint: function(bp, exp) {
-            breakpoints[bp] = exp || function() { return true; };
+        getDebugger: function () {
+            return theDebugger;
         }
     };
 }

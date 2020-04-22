@@ -96,4 +96,5 @@ io.setSlot(5, clock);
 io.setSlot(6, disk2);
 io.setSlot(7, cffa);
 
+export var debug = apple2.getDebugger();
 

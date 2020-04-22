@@ -12,7 +12,7 @@
 import { debug, toHex } from '../util';
 import { P7, P8A } from '../roms/cards/serial';
 
-export default function Serial(io, cbs) {
+export default function Serial() {
 
     debug('Serial card');
     var SWITCHES = [
@@ -27,8 +27,8 @@ export default function Serial(io, cbs) {
 
     var LOC = {
         STATUS: 0x80,
-        DATA_1: 0x81,
-        DATA_0: 0x82
+        DATA_0: 0x81,
+        DATA_1: 0x82
     };
 
     function init() {
@@ -50,11 +50,11 @@ export default function Serial(io, cbs) {
             switch (off & 0x83) {
             case LOC.STATUS:
                 break;
-            case LOC.DATA_1:
-                debug('xmit 1');
-                break;
             case LOC.DATA_0:
                 debug('xmit 0');
+                break;
+            case LOC.DATA_1:
+                debug('xmit 1');
                 break;
             default:
                 debug('Serial card unknown soft switch', toHex(off));

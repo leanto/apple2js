@@ -1144,6 +1144,29 @@ describe('CPU6502', function() {
             expectMemory([[0x03, 0x33, [0xAA]]]);
         });
 
+        it('should ROR abs,X with carry out', function () {
+            initMemory([[0x03, 0x23, [0x55]]]);
+            testCode([0x7E, 0x33, 0x02], 1, {
+                x: 0xF0
+            }, {
+                cycles: 7,
+                s: FLAGS.DEFAULT | FLAGS.C
+            });
+            expectMemory([[0x03, 0x23, [0x2A]]]);
+        });
+
+        it('should ROR abs,X with carry in', function () {
+            initMemory([[0x03, 0x23, [0x55]]]);
+            testCode([0x7E, 0x33, 0x02], 1, {
+                x: 0xF0,
+                s: FLAGS.DEFAULT | FLAGS.C
+            }, {
+                cycles: 7,
+                s: FLAGS.DEFAULT | FLAGS.C | FLAGS.N
+            });
+            expectMemory([[0x03, 0x23, [0xAA]]]);
+        });
+
         it('should AND', function() {
             initMemory([[0x03, 0x33, [0x55]]]);
             testCode([0x2D, 0x33, 0x03], 1, {

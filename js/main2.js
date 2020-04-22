@@ -110,3 +110,5 @@ io.setSlot(3, videoTerm);
 io.setSlot(6, disk2);
 
 cpu.addPageHandler(lc);
+
+export var debug = apple2.getDebugger();
