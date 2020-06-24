@@ -5,10 +5,11 @@ import Printer from './ui/printer';
 
 import CFFA from './cards/cffa';
 import DiskII from './cards/disk2';
-import Parallel from './cards/parallel';
+// import Parallel from './cards/parallel';
 import RAMFactor from './cards/ramfactor';
 import Serial from './cards/serial';
 import Thunderclock from './cards/thunderclock';
+import Mouse from './cards/mouse';
 
 import apple2e_charset from './roms/apple2e_char';
 import apple2enh_charset from './roms/apple2enh_char';
@@ -77,21 +78,52 @@ if (canvas4) {
 
 export var apple2 = new Apple2(options);
 var io = apple2.getIO();
+var cpu = apple2.getCPU();
+
+function mouseMode(on) {
+    if (on) {
+        canvas1.classList.add('mouseMode');
+    } else {
+        canvas1.classList.remove('mouseMode');
+    }
+}
 
 var printer = new Printer('#printer-modal .paper');
 
-var parallel = new Parallel(io, printer);
+// var parallel = new Parallel(io, printer);
 var serial = new Serial(io, printer);
 var slinky = new RAMFactor(io, 1024 * 1024);
 var disk2 = new DiskII(io, driveLights);
 var clock = new Thunderclock(io);
 var cffa = new CFFA(io);
+var mouse = new Mouse(io, cpu, { mouseMode: mouseMode });
+
+var canvases = document.querySelectorAll('canvas');
+
+canvases.forEach(function (el) {
+    el.addEventListener('mousemove', function (event) {
+        mouse.setMouseXY(
+            event.offsetX,
+            event.offsetY,
+            event.target.clientWidth,
+            event.target.clientHeight
+        );
+    });
+
+    el.addEventListener('mousedown', function () {
+        mouse.setMouseDown(true);
+    });
+
+    el.addEventListener('mouseup', function () {
+        mouse.setMouseDown(false);
+    });
+});
 
 initUI(apple2, disk2, cffa, options.e);
 
-io.setSlot(1, parallel);
-io.setSlot(2, serial);
-io.setSlot(4, slinky);
+io.setSlot(1, serial);
+io.setSlot(2, slinky);
+io.setSlot(4, mouse);
 io.setSlot(5, clock);
 io.setSlot(6, disk2);
 io.setSlot(7, cffa);

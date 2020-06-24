@@ -360,11 +360,14 @@ export default function Apple2IO(cpu, callbacks)
         },
 
         blit: function apple2io_blit() {
-            var card = _slot[3];
-            if (card && card.blit) {
-                return card.blit();
+            var blitted = false;
+            for (var slot = 0; slot < 8; slot++) {
+                var card = _slot[slot];
+                if (card && card.blit) {
+                    blitted = card.blit() || blitted;
+                }
             }
-            return false;
+            return blitted;
         },
 
         read: function apple2io_read(page, off) {

@@ -89,17 +89,10 @@ export function Apple2(options) {
             if (mmu) {
                 mmu.resetVB();
             }
-            if (io.annunciator(0)) {
-                if (options.multiScreen) {
-                    vm.blit();
-                }
-                if (io.blit()) {
-                    stats.renderedFrames++;
-                }
-            } else {
-                if (vm.blit()) {
-                    stats.renderedFrames++;
-                }
+            var vmBlit = vm.blit();
+            var ioBlit = io.blit();
+            if (vmBlit || ioBlit) {
+                stats.renderedFrames++;
             }
             stats.frames++;
             io.tick();

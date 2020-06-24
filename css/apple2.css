@@ -211,6 +211,10 @@ canvas {
     image-rendering: optimizeSpeed;
 }
 
+#screen.mouseMode {
+    cursor: none;
+}
+
 #screen:-webkit-full-screen {
     top: 0;
     left: 0;
